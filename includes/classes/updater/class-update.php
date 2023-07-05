@@ -7,12 +7,14 @@ class Update {
 	public $version;
 	public $cache_key;
 	public $cache_allowed;
+	public $package_name;
 
 	public function __construct() {
 
-		$this->plugin_slug = plugin_basename( DXSF_PROXY_DIR );
-		$this->version = DXSF_PROXY_VERSION;
-		$this->cache_key = 'dxsf_proxy_update';
+		$this->plugin_slug   = plugin_basename( DXSF_PROXY_DIR );
+		$this->package_name  = 'dxsf-wordpress-proxy.zip';
+		$this->version       = DXSF_PROXY_VERSION;
+		$this->cache_key     = 'dxsf_proxy_update';
 		$this->cache_allowed = false;
 	}
 
@@ -104,12 +106,13 @@ class Update {
 			&& version_compare( $this->version, $remote_version, '<' )
 		) {
 			$res = new \stdClass();
-			$res->slug = $this->plugin_slug;
-			$res->plugin = plugin_basename( DXSF_PROXY_DIR . '/dxsf-proxy.php' ); // misha-update-plugin/misha-update-plugin.php
-			$res->new_version = $remote_version;
-			$res->author = 'DevriX';
-			$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
-			$res->trunk = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
+			$res->slug          = $this->plugin_slug;
+			$res->plugin        = plugin_basename( DXSF_PROXY_DIR . '/dxsf-proxy.php' ); // misha-update-plugin/misha-update-plugin.php
+			$res->new_version   = $remote_version;
+			$res->author        = 'DevriX';
+			$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/' . $this->package_name;
+			$res->trunk         = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/' . $this->package_name;
+			$res->package       = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/' . $this->package_name;
 
 			$transient->response[ $res->plugin ] = $res;
 		}
