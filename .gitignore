@@ -12,6 +12,7 @@
 *.vi
 *~
 *.sass-cache
+*.zip
 
 # Ignore log files and databases
 *.log
