@@ -116,11 +116,19 @@ class API {
 	 */
 	public function permissions_callback( WP_REST_Request $request ) {
 
-		if ( ! defined( 'DXSF_REMOTE' ) ) {
+		$remote = false;
+
+		if ( defined( 'DXSF_REMOTE' ) ) {
+			$remote = DXSF_REMOTE;
+		} else {
+			$remote = get_option( 'dxsf_remote_address' );
+		}
+
+		if ( empty( $remote ) ) {
 			return false;
 		}
 
-		if ( ! DXSF_DEBUG && ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== DXSF_REMOTE ) ) {
+		if ( ! DXSF_DEBUG && ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== $remote ) ) {
 			return false;
 		}
 

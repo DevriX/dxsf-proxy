@@ -91,15 +91,10 @@ class Admin {
 			'dxsf_error_log_file'
 		);
 
-		// register_setting(
-		// 	'dxsf-settings-group',
-		// 	'dxsf_project_title'
-		// );
-
-		// register_setting(
-		// 	'dxsf-settings-group',
-		// 	'dxsf_log_days'
-		// );
+		register_setting(
+			'dxsf-settings-group',
+			'dxsf_remote_address'
+		);
 
 		add_settings_field(
 			'dxsf_error_log_file',
@@ -109,21 +104,13 @@ class Admin {
 			'dxsf-settings-section'
 		);
 
-		// add_settings_field(
-		// 	'dxsf_project_title',
-		// 	'Project Title',
-		// 	array( $this, 'render_dxsf_project_title_field' ),
-		// 	'dxsf-settings-section',
-		// 	'dxsf-settings-section'
-		// );
-
-		// add_settings_field(
-		// 	'dxsf_log_days',
-		// 	'Days to keep the log files',
-		// 	array( $this, 'render_dxsf_log_days_field' ),
-		// 	'dxsf-settings-section',
-		// 	'dxsf-settings-section'
-		// );
+		add_settings_field(
+			'dxsf_remote_address',
+			'Remote address',
+			array( $this, 'render_dxsf_remote_address_field' ),
+			'dxsf-settings-section',
+			'dxsf-settings-section'
+		);
 	}
 
 	/**
@@ -139,21 +126,17 @@ class Admin {
 	}
 
 	/**
-	 * It creates a text input field with the name of dxsf_project_title and the value of the option
-	 * dxsf_project_title
+	 * It creates a text input field with the name of dxsf_remote_address and the value of the option
+	 * dxsf_remote_address
 	 */
-	// public function render_dxsf_project_title_field() {
-	// 	$slack_title_message = get_option( 'dxsf_project_title' );
-	// 	echo '<input type="text" name="dxsf_project_title" value="' . esc_attr( $slack_title_message ) . '" size="80"/>';
-	// }
+	public function render_dxsf_remote_address_field() {
+		$remote_address = get_option( 'dxsf_remote_address' );
+		echo '<input type="text" name="dxsf_remote_address" value="' . esc_attr( $remote_address ) . '" size="50"/>';
+		echo '<div class="dxsf-info-messages">The IP address of the DX Stability Framework server.</div>';
 
-	/**
-	 * It creates a text input field with the name "dxsf_log_days" and the value of the option
-	 * "dxsf_log_days" (which is stored in the database)
-	 */
-	// public function render_dxsf_log_days_field() {
-	// 	$log_days = get_option( 'dxsf_log_days' );
-	// 	echo '<input type="number" name="dxsf_log_days" value="' . esc_attr( $log_days ) . '" size="1"/>';
-	// }
+		if ( defined( 'DXSF_REMOTE' ) ) {
+			echo '<div style="text-color:green" class="dxsf-info-messages">The IP address of the DX Stability Framework server is defined in the wp-config.php file.</div>';
+		}
+	}
 
 }

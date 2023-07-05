@@ -82,12 +82,12 @@ class Update {
 
 		$res = new \stdClass();
 
-		$res->name = 'DXSF Proxy';
-		$res->slug = $this->plugin_slug;
-		$res->version = $remote_version;
-		$res->author = 'DevriX';
-		$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
-		$res->trunk = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
+		$res->name          = 'DXSF Proxy';
+		$res->slug          = $this->plugin_slug;
+		$res->version       = $remote_version;
+		$res->author        = 'DevriX';
+		$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/' . $this->package_name;
+		$res->trunk         = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/' . $this->package_name;
 
 		return $res;
 

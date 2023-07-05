@@ -1,9 +1,9 @@
 {
 	"name": "dxsf-proxy",
-	"version": "1.0.0",
-	"description": "This is a short description of the DX Plugin Boilerplate.",
+	"version": "2.3.4",
+	"description": "Proxy for DXSF",
 	"author": "DevriX",
-	"private": true,
+	"private": false,
 	"devDependencies": {
 		"@babel/core": "^7.16.12",
 		"@babel/preset-env": "^7.16.11",
