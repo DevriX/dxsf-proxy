@@ -15,7 +15,7 @@
  * Plugin Name:       DXSF Proxy
  * Plugin URI:        https://devrix.com
  * Description:       Stability Framework Proxy Plugin
- * Version:           2.3.2
+ * Version:           2.3.3
  * Author:            DevriX
  * Author URI:        https://devrix.com
  * License:           GPL-2.0+
@@ -34,7 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  * For the versioning of the plugin is used SemVer - https://semver.org
  * Rename this for every new plugin and update it as you release new versions.
  */
-define( 'DXSF_PROXY_VERSION', '2.3.2' );
+define( 'DXSF_PROXY_VERSION', '2.3.3' );
 
 if ( ! defined( 'DXSF_PROXY_DIR' ) ) {
 	define( 'DXSF_PROXY_DIR', plugin_dir_path( __FILE__ ) );
