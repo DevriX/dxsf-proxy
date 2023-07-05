@@ -16,40 +16,45 @@ class Update {
 		$this->cache_allowed = false;
 	}
 
-	public function request() {
+	public function get_remote_version() {
 
-		$remote = get_transient( $this->cache_key );
+		$remote_version = get_transient( $this->cache_key );
 
-		if( false === $remote || ! $this->cache_allowed ) {
+		if( false === $remote_version || ! $this->cache_allowed ) {
 
-			// read the info.json file in the same folder
-			$remote = file_get_contents( DXSF_PROXY_DIR . '/includes/classes/updater/info.json' );
+			$remote = wp_remote_get(
+				'https://raw.githubusercontent.com/DevriX/dxsf-proxy/master/dxsf-proxy.php',
+				array(
+					'timeout' => 10,
+					'headers' => array(
+						'Accept' => 'application/json'
+					)
+				)
+			);
 
-			// $remote = wp_remote_get(
-			// 	'https://rudrastyh.com/wp-content/uploads/updater/info.json',
-			// 	array(
-			// 		'timeout' => 10,
-			// 		'headers' => array(
-			// 			'Accept' => 'application/json'
-			// 		)
-			// 	)
-			// );
+			if(
+				is_wp_error( $remote )
+				|| 200 !== wp_remote_retrieve_response_code( $remote )
+				|| empty( wp_remote_retrieve_body( $remote ) )
+			) {
+				return false;
+			}
 
-			// if(
-			// 	is_wp_error( $remote )
-			// 	|| 200 !== wp_remote_retrieve_response_code( $remote )
-			// 	|| empty( wp_remote_retrieve_body( $remote ) )
-			// ) {
-			// 	return false;
-			// }
+			$remote = wp_remote_retrieve_body( $remote );
 
-			set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
+			preg_match( '/^\s*\* Version:\s*(.*)$/im', $remote, $matches );
+
+			if( empty( $matches[1] ) ) {
+				return false;
+			}
+
+			$remote_version = $matches[1];
+
+			set_transient( $this->cache_key, $remote_version, DAY_IN_SECONDS );
 
 		}
 
-		$remote = json_decode( $remote );
-
-		return $remote;
+		return $remote_version;
 
 	}
 
@@ -67,20 +72,20 @@ class Update {
 		}
 
 		// get updates
-		$remote = $this->request();
+		$remote_version = $this->get_remote_version();
 
-		if( ! $remote ) {
+		if( ! $remote_version ) {
 			return $res;
 		}
 
 		$res = new \stdClass();
 
-		$res->name = $remote->name;
-		$res->slug = $remote->slug;
-		$res->version = $remote->version;
-		$res->author = $remote->author;
-		$res->download_link = $remote->download_url;
-		$res->trunk = $remote->download_url;
+		$res->name = 'DXSF Proxy';
+		$res->slug = $this->plugin_slug;
+		$res->version = $remote_version;
+		$res->author = 'DevriX';
+		$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
+		$res->trunk = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
 
 		return $res;
 
@@ -88,28 +93,28 @@ class Update {
 
 	public function update( $transient ) {
 
-		if ( empty($transient->checked ) ) {
+		if ( empty( $transient->checked ) ) {
 			return $transient;
 		}
 
-		$remote = $this->request();
+		$remote_version = $this->get_remote_version();
 
 		if (
-			$remote
-			&& version_compare( $this->version, $remote->version, '<' )
+			$remote_version
+			&& version_compare( $this->version, $remote_version, '<' )
 		) {
-
 			$res = new \stdClass();
 			$res->slug = $this->plugin_slug;
 			$res->plugin = plugin_basename( DXSF_PROXY_DIR . '/dxsf-proxy.php' ); // misha-update-plugin/misha-update-plugin.php
-			$res->new_version = $remote->version;
-			$res->package = $remote->download_url;
+			$res->new_version = $remote_version;
+			$res->author = 'DevriX';
+			$res->download_link = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
+			$res->trunk = 'https://github.com/DevriX/dxsf-proxy/releases/latest/download/dxsf-wordpress-proxy.zip';
 
 			$transient->response[ $res->plugin ] = $res;
-	}
+		}
 
 		return $transient;
-
 	}
 
 	public function purge( $upgrader, $options ) {
@@ -122,6 +127,5 @@ class Update {
 			// just clean the cache when new plugin version is installed
 			delete_transient( $this->cache_key );
 		}
-
 	}
 }
