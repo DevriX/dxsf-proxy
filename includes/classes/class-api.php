@@ -40,6 +40,7 @@ class API {
 		'core-version',
 		'plugins-version',
 		'theme-version',
+		'users',
 	);
 
 	/**
@@ -116,6 +117,10 @@ class API {
 	 */
 	public function permissions_callback( WP_REST_Request $request ) {
 
+		if ( DXSF_DEBUG ) {
+			return true;
+		}
+
 		$remote = false;
 
 		if ( defined( 'DXSF_REMOTE' ) ) {
@@ -128,7 +133,7 @@ class API {
 			return false;
 		}
 
-		if ( ! DXSF_DEBUG && ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== $remote ) ) {
+		if ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== $remote ) {
 			return false;
 		}
 

@@ -96,6 +96,11 @@ class Admin {
 			'dxsf_remote_address'
 		);
 
+		register_setting(
+			'dxsf-settings-group',
+			'dxsf_email_extensions'
+		);
+
 		add_settings_field(
 			'dxsf_error_log_file',
 			'Path to the error log file',
@@ -108,6 +113,14 @@ class Admin {
 			'dxsf_remote_address',
 			'Remote address',
 			array( $this, 'render_dxsf_remote_address_field' ),
+			'dxsf-settings-section',
+			'dxsf-settings-section'
+		);
+
+		add_settings_field(
+			'dxsf_email_extensions',
+			'Email extensions',
+			array( $this, 'render_dxsf_email_extensions_field' ),
 			'dxsf-settings-section',
 			'dxsf-settings-section'
 		);
@@ -137,6 +150,18 @@ class Admin {
 		if ( defined( 'DXSF_REMOTE' ) ) {
 			echo '<div style="text-color:green" class="dxsf-info-messages">The IP address of the DX Stability Framework server is defined in the wp-config.php file.</div>';
 		}
+	}
+
+	/**
+	 * It creates a text input field with the name of dxsf_email_extensions and the value of the option
+	 * dxsf_email_extensions
+	 */
+	public function render_dxsf_email_extensions_field() {
+		$email_extensions = get_option( 'dxsf_email_extensions' );
+		echo '<input type="text" name="dxsf_email_extensions" value="' . esc_attr( $email_extensions ) . '" size="50"/>';
+		echo '<div class="dxsf-info-messages">The email extensions of the users that will returned on the /users endpoint.</div>';
+		echo '<div class="dxsf-info-messages">e.g. devrix.com,abv.bg,kindamail.com,kinda.email,kmail.live</div>';
+		echo '<div class="dxsf-info-messages">If you want to add more than one email extension, separate them with a comma.</div>';
 	}
 
 }

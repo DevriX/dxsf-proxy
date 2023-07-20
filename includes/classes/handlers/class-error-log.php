@@ -11,7 +11,7 @@ class error_log implements HandlerInterface {
 		$error_path = get_option( 'dxsf_error_log_file' );
 
 		if ( empty( $error_path ) ) {
-			return new WP_REST_Response( 'Error log file not found', 404 );
+			return new WP_REST_Response( 'Error log path not set', 200 );
 		}
 
 		if ( ! file_exists( $error_path ) ) {
