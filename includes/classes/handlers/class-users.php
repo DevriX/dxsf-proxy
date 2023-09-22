@@ -6,17 +6,7 @@ use WP_REST_Response;
 
 class users implements HandlerInterface {
 
-	public function handle( WP_REST_Request $request ) : WP_REST_Response {
-
-		$users = get_users(
-			array(
-				'fields'      => array( 'ID', 'display_name', 'user_email' ),
-				'count_total' => false,
-				'blog_id'     => '0',
-			)
-		);
-
-		$is_multisite = is_multisite();
+	public function handle( WP_REST_Request $request ): WP_REST_Response {
 
 		$email_extensions = get_option( 'dxsf_email_extensions' );
 
@@ -24,21 +14,33 @@ class users implements HandlerInterface {
 			return new WP_REST_Response( 'Email Extensions not set', 200 );
 		}
 
+		global $wpdb;
+
 		$email_extensions = explode( ',', $email_extensions );
+
+		foreach ( $email_extensions as $index => $extension ) {
+			$extension = trim( $extension );
+
+			if ( empty( $extension ) ) {
+				unset( $email_extensions[ $index ] );
+			} else {
+				$email_extensions[ $index ] = "user_email LIKE '%@" . $wpdb->esc_like( $extension ) . "'";
+			}
+		}
+
+		$where = 'WHERE (' . implode( ' OR ', $email_extensions ) . ')';
+
+		$users = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID, display_name, user_email FROM $wpdb->users $where"
+			)
+		);
+
+		$is_multisite = is_multisite();
 
 		$response = array();
 
 		foreach ( $users as $user ) {
-
-			try {
-				$extension = explode( '@', $user->user_email)[1];
-			} catch ( \Exception $e ) {
-				continue;
-			}
-
-			if ( ! in_array( $extension, $email_extensions ) ) {
-				continue;
-			}
 
 			$user_info = array(
 				'id'    => $user->ID,
