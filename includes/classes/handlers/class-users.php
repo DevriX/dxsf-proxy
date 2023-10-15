@@ -11,7 +11,7 @@ class users implements HandlerInterface {
 		$email_extensions = get_option( 'dxsf_email_extensions' );
 
 		if ( empty( $email_extensions ) ) {
-			return new WP_REST_Response( 'Email Extensions not set', 200 );
+			return new WP_REST_Response( 'Email Extensions not set', 404 );
 		}
 
 		global $wpdb;
