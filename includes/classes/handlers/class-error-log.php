@@ -11,7 +11,7 @@ class error_log implements HandlerInterface {
 		$error_path = get_option( 'dxsf_error_log_file' );
 
 		if ( empty( $error_path ) ) {
-			return new WP_REST_Response( 'Error log path not set', 200 );
+			return new WP_REST_Response( 'Error log path not set', 404 );
 		}
 
 		if ( ! file_exists( $error_path ) ) {
@@ -22,10 +22,13 @@ class error_log implements HandlerInterface {
 			}
 		}
 
-		$today = sprintf( "[%s", date( 'd-M-Y' ) );
+		$date_format = get_option( 'dxsf_date_format', '[d-M-Y' );
+
+		$today = date( $date_format );
 
 		if ( $request->get_param( 'date' ) ) {
-			$today = sprintf( "[%s", $request->get_param( 'date' ) );
+
+			$today = date( $date_format, strtotime( $request->get_param( 'date' ) ) );
 		}
 
 		$error_log = $this->fetch_error_log_data( $error_path, $today );
@@ -33,29 +36,29 @@ class error_log implements HandlerInterface {
 		return new WP_REST_Response( $error_log, 200 );
 	}
 
-	public static function fetch_error_log_data( $file, $date ) {
-		$handle = @fopen($file, "r");
+	public static function fetch_error_log_data( $file, $date,  ) {
+		$handle = @fopen( $file, "r" );
 		
-		$error_log = "";
+		$error_log         = "";
 		$proper_date_range = false; // By default, we're not in today's range
 		
 		// Try to read lines one by one
 		// First rows would be
-		while (($line = fgets($handle, 65535)) !== false) {
+		while ( ( $line = fgets( $handle, 65535 ) ) !== false ) {
 			// Already in the right range at the end
-			if ($proper_date_range) {
+			if ( $proper_date_range ) {
 				$error_log .= $line . PHP_EOL;
-			} else if(0 === strpos($line, "$date")) { // If we start with today's date
+			} elseif (0 === strpos( $line, "$date" ) ) { // If we start with today's date
 				$proper_date_range = true;
 				$error_log .= $line . PHP_EOL;
 			} else {
 				continue; // skip
 			}
 		}
-		if (!feof($handle)) {
+		if ( ! feof( $handle ) ) {
 			$error_log .= "Error: unexpected fgets() fail\n";
 		}
-		fclose($handle);
+		fclose( $handle );
 		
 		return $error_log;
 	}
