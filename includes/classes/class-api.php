@@ -24,15 +24,16 @@ class API {
 
 	/**
 	 * The base endpoint.
+	 *
 	 * @var string
 	 */
 	private $endpoint_base = 'dxsf-proxy/v1';
 
 	/**
 	 * The endpoints that will be registered.
-	 * 
+	 *
 	 * Handler classes should be named as the endpoint name but with underscores instead of dashes, of course.
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $endpoints = array(
@@ -40,7 +41,7 @@ class API {
 		'core-version',
 		'plugins-version',
 		'theme-version',
-		'users',
+		'db-check',
 	);
 
 	/**
@@ -48,7 +49,6 @@ class API {
 	 *
 	 * @since 1.0.0
 	 */
-
 	public function register_rest_api_endpoints() {
 
 		foreach ( $this->endpoints as $endpoint ) {
@@ -56,9 +56,9 @@ class API {
 				$this->endpoint_base,
 				'/' . $endpoint,
 				array(
-					'methods'  => 'GET',
-					'callback' => array( $this, 'api_handler' ),
-					'permission_callback' => array( $this, 'permissions_callback' )
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'api_handler' ),
+					'permission_callback' => array( $this, 'permissions_callback' ),
 				)
 			);
 		}
@@ -66,6 +66,8 @@ class API {
 
 	/**
 	 * Hide Rest API endpoint from the wp-json list.
+	 *
+	 * @param array $endpoints The endpoints.
 	 */
 	public function hide_rest_api_endpoint( $endpoints ) {
 
@@ -95,9 +97,11 @@ class API {
 
 	/**
 	 * API endpoint handler.
+	 *
+	 * @param WP_REST_Request $request The request.
 	 */
 	public function api_handler( WP_REST_Request $request ) {
-		
+
 		// Dynamically call a class from the handlers folder based on the endpoint name.
 		$endpoint = $request->get_route();
 		$endpoint = str_replace( '/' . $this->endpoint_base . '/', '', $endpoint );
@@ -114,12 +118,10 @@ class API {
 
 	/**
 	 * Permissions callback.
+	 *
+	 * @param WP_REST_Request $request The request.
 	 */
 	public function permissions_callback( WP_REST_Request $request ) {
-
-		if ( DXSF_DEBUG ) {
-			return true;
-		}
 
 		$remote = false;
 
@@ -133,7 +135,7 @@ class API {
 			return false;
 		}
 
-		if ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== $remote ) {
+		if ( ! DXSF_DEBUG && ( empty( $_SERVER['REMOTE_ADDR'] ) || $_SERVER['REMOTE_ADDR'] !== $remote ) ) {
 			return false;
 		}
 
