@@ -41,6 +41,7 @@ class API {
 		'core-version',
 		'plugins-version',
 		'theme-version',
+		'users',
 		'db-check',
 	);
 
