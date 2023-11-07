@@ -121,7 +121,14 @@ class API {
 			return true;
 		}
 
-		$remote = false;
+		if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+			return false;
+		}
+
+		// If request is done from the same server, allow it.
+		if ( ! empty( $_SERVER['SERVER_ADDR'] ) && ( $_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'] ) ) {
+			return true;
+		}
 
 		if ( defined( 'DXSF_REMOTE' ) ) {
 			$remote = DXSF_REMOTE;
@@ -133,7 +140,7 @@ class API {
 			return false;
 		}
 
-		if ( empty( $_SERVER ) || $_SERVER['REMOTE_ADDR'] !== $remote ) {
+		if ( $_SERVER['REMOTE_ADDR'] !== $remote ) {
 			return false;
 		}
 
