@@ -265,7 +265,7 @@ class Admin {
 	public function render_dxsf_email_extensions_field() {
 		$email_extensions = get_option( 'dxsf_email_extensions' );
 		?>
-		<input type="text" name="dxsf_email_extensions" value="<?php esc_attr( $email_extensions ); ?>" size="50"/>
+		<input type="text" name="dxsf_email_extensions" value="<?php echo esc_attr( $email_extensions ); ?>"/>
 		<div class="dxsf-info-messages">The email extensions of the users that will returned on the /users endpoint.</div>
 		<div class="dxsf-info-messages">e.g. devrix.com,abv.bg,kindamail.com,kinda.email,kmail.live</div>
 		<div class="dxsf-info-messages">If you want to add more than one email extension, separate them with a comma.</div>
