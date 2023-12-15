@@ -209,7 +209,7 @@ class Admin {
 
 		if ( ! empty( $error_log_file ) ) {
 			$response = wp_remote_get(
-				get_site_url() . '/wp-json/dxsf-proxy/v1/error-log',
+				rest_url( 'dxsf-proxy/v1/error-log' ) . '?dxdoneonsameserver=true',
 				array(
 					'sslverify' => false,
 				)
