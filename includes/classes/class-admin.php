@@ -108,7 +108,7 @@ class Admin {
 				?>
 				<form method="GET" action="" >
 					<label for="date">Show error log starting from:</label>
-					<input type="date" name="date" value="<?php echo date( 'Y-m-d' ); ?>" >
+					<input type="date" name="date" value="<?php echo esc_attr( empty( $_GET['date'] ) ? gmdate( 'Y-m-d' ) : $_GET['date'] ); ?>" >
 					<?php wp_nonce_field( 'dxsf_proxy' ); ?>
 					<input type="hidden" name="page" value="dxsf-settings">
 					<input type="submit" value="Show">
