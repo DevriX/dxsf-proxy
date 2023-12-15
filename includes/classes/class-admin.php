@@ -38,7 +38,6 @@ class Admin {
 	public function __construct( $plugin_name ) {
 
 		$this->plugin_name = $plugin_name;
-
 	}
 
 	/**
@@ -48,7 +47,7 @@ class Admin {
 
 		// get current user email
 
-		$user = wp_get_current_user();
+		$user       = wp_get_current_user();
 		$user_email = $user->user_email;
 
 		if ( str_contains( $user_email, '@devrix.com' ) || DXSF_DEBUG ) {
@@ -80,14 +79,13 @@ class Admin {
 			<?php if ( empty( get_option( 'dxsf_error_log_file' ) ) ) : ?>
 				<p>There is no error log file path set.</p>
 			<?php else :
-
-				$date = date( 'Y-m-d' );
+				$date = gmdate( 'Y-m-d' );
 				if ( isset( $_GET['date'] ) ) {
 					$date = $_GET['date'];
 				}
 
 				$response = wp_remote_get(
-					get_site_url() . '/wp-json/dxsf-proxy/v1/error-log?date=' . $date,
+					rest_url( 'dxsf-proxy/v1/error-log' ) . '?date=' . $date . '&dxdoneonsameserver=true',
 					array(
 						'sslverify' => false,
 					)
@@ -108,19 +106,21 @@ class Admin {
 				$error_log = str_replace( 'PHP&nbsp;Deprecated', '<span style="color: purple">PHP&nbsp;Deprecated</span>', $error_log );
 				$error_log = str_replace( 'PHP&nbsp;Unknown&nbsp;error', '<span style="color: red">PHP&nbsp;Unknown&nbsp;error</span>', $error_log );
 				?>
-				<form method="GET">
+				<form method="GET" action="" >
 					<label for="date">Show error log starting from:</label>
-					<input type="date" name="date" value="<?php echo date( 'Y-m-d' ); ?>" >
+					<input type="date" name="date" value="<?php echo esc_attr( empty( $_GET['date'] ) ? gmdate( 'Y-m-d' ) : $_GET['date'] ); ?>" >
+					<?php wp_nonce_field( 'dxsf_proxy' ); ?>
+					<input type="hidden" name="page" value="dxsf-settings">
 					<input type="submit" value="Show">
 				</form>
 				<?php if ( ! empty( $error_log ) ) : ?>
 					<!-- Count amount of errors -->
 					<?php
-					$php_fatal_error_count = substr_count( $error_log, 'PHP&nbsp;Fatal&nbsp;error' );
-					$php_warning_count     = substr_count( $error_log, 'PHP&nbsp;Warning' );
-					$php_notice_count      = substr_count( $error_log, 'PHP&nbsp;Notice' );
-					$php_parse_error_count = substr_count( $error_log, 'PHP&nbsp;Parse&nbsp;error' );
-					$php_deprecated_count  = substr_count( $error_log, 'PHP&nbsp;Deprecated' );
+					$php_fatal_error_count   = substr_count( $error_log, 'PHP&nbsp;Fatal&nbsp;error' );
+					$php_warning_count       = substr_count( $error_log, 'PHP&nbsp;Warning' );
+					$php_notice_count        = substr_count( $error_log, 'PHP&nbsp;Notice' );
+					$php_parse_error_count   = substr_count( $error_log, 'PHP&nbsp;Parse&nbsp;error' );
+					$php_deprecated_count    = substr_count( $error_log, 'PHP&nbsp;Deprecated' );
 					$php_unknown_error_count = substr_count( $error_log, 'PHP&nbsp;Unknown&nbsp;error' );
 					?>
 					<span><strong>Fatal errors</strong> - <?php echo $php_fatal_error_count; ?>;</span>
@@ -209,7 +209,7 @@ class Admin {
 
 		if ( ! empty( $error_log_file ) ) {
 			$response = wp_remote_get(
-				get_site_url() . '/wp-json/dxsf-proxy/v1/error-log',
+				rest_url( 'dxsf-proxy/v1/error-log' ) . '?dxdoneonsameserver=true',
 				array(
 					'sslverify' => false,
 				)
@@ -222,7 +222,7 @@ class Admin {
 		}
 
 		?>
-		<?php if ( ! empty( $error_log_file ) && ! $file_exists ): ?>
+		<?php if ( ! empty( $error_log_file ) && ! $file_exists ) : ?>
 			<div class="notice notice-error" style="padding: 10px 10px">The error log file does not exist.</div>
 		<?php endif; ?>
 
@@ -255,7 +255,8 @@ class Admin {
 
 		<?php if ( defined( 'DXSF_REMOTE' ) ) : ?>
 			<div style="color:green" class="dxsf-info-messages">The IP address of the DX Stability Framework server is defined in the wp-config.php file.</div>
-		<?php endif;
+			<?php
+		endif;
 	}
 
 	/**
@@ -271,5 +272,4 @@ class Admin {
 		<div class="dxsf-info-messages">If you want to add more than one email extension, separate them with a comma.</div>
 		<?php
 	}
-
 }
