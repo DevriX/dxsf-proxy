@@ -99,7 +99,7 @@ class API {
 	/**
 	 * API endpoint handler.
 	 *
-	 * @param WP_REST_Request $request The request.
+	 * @param WP_REST_Request $request The request object.
 	 */
 	public function api_handler( WP_REST_Request $request ) {
 
@@ -120,11 +120,21 @@ class API {
 	/**
 	 * Permissions callback.
 	 *
-	 * @param WP_REST_Request $request The request.
+	 * @param WP_REST_Request $request The request object.
 	 */
 	public function permissions_callback( WP_REST_Request $request ) {
 
-		$remote = false;
+		if ( DXSF_DEBUG ) {
+			return true;
+		}
+
+		if ( $request->has_param( 'dxdoneonsameserver' ) ) {
+			return true;
+		}
+
+		if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+			return false;
+		}
 
 		if ( defined( 'DXSF_REMOTE' ) ) {
 			$remote = DXSF_REMOTE;
@@ -136,7 +146,7 @@ class API {
 			return false;
 		}
 
-		if ( ! DXSF_DEBUG && ( empty( $_SERVER['REMOTE_ADDR'] ) || $_SERVER['REMOTE_ADDR'] !== $remote ) ) {
+		if ( $_SERVER['REMOTE_ADDR'] !== $remote ) {
 			return false;
 		}
 
