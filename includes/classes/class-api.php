@@ -127,6 +127,7 @@ class API {
 			return true;
 		}
 
+		// TODO: CHANGE THIS TO A MORE SECURE WAY. THANK YOU. GET_OPTION() :)
 		if ( $request->has_param( 'dxdoneonsameserver' ) ) {
 			return true;
 		}
