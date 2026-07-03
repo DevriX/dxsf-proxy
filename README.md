@@ -1,9 +1,43 @@
-# DXSF WordPress Proxy
+# DXSF Proxy (WordPress plugin)
 
-This is a tool that exposes few REST API endpoints to allow WordPress to communicate with the Stability Framework.
+WordPress plugin that exposes REST API endpoints so the [DX Stability Framework](https://github.com/DevriX/dx-stability-framework) can read site-internal data without SSH access to the server.
+
+## Related repositories
+
+| Repository | Role |
+|------------|------|
+| **[dx-stability-framework](https://github.com/DevriX/dx-stability-framework)** | Core library that calls this plugin and runs stability checks |
+| **[dxsf-client-rules](https://github.com/DevriX/dxsf-client-rules)** | Per-project cron scripts that orchestrate checks and Slack alerts |
+| **[dxsf-proxy](https://github.com/DevriX/dxsf-proxy)** (this repo) | Plugin installed on each monitored WordPress site |
+
+## How it fits in
+
+The Stability Framework server runs cron jobs from [dxsf-client-rules](https://github.com/DevriX/dxsf-client-rules). Those scripts use the [core](https://github.com/DevriX/dx-stability-framework) to:
+
+- Fetch public HTML (GTM, noindex, etc.)
+- Call **this plugin** for WordPress-only data: error logs, plugin/core/theme versions, user lists
+
+Without dxsf-proxy on a site, proxy-backed rules in client-rules will not return data.
 
 ## Installation
-- Download the latest release from the [releases page](https://github.com/DevriX/dxsf-proxy/releases) and install it as a plugin in your WordPress installation.
 
-- Go to the `DXSF Settings` page inside the dashboard and enter the path to the error log file or endpoint URL. This is the file that the Stability Framework is going to read from and report.
-> IMPORTANT! Make sure you are logged in with a @devrix.com email or set the `DXSF_DEBUG` define to `true` that is located inside the `dxsf-proxy.php` file.
+1. Download the latest release from the [releases page](https://github.com/DevriX/dxsf-proxy/releases).
+2. Install and activate the plugin on the WordPress site.
+3. Open **DXSF Settings** in the WordPress admin and configure the error log path or endpoint URL.
+
+> **Important:** Log in with a `@devrix.com` email, or set `DXSF_DEBUG` to `true` in `dxsf-proxy.php` for local testing.
+
+## Development
+
+```bash
+npm install
+npm run build   # if using webpack assets
+```
+
+Plugin entry point: `dxsf-proxy.php`
+
+Handlers live under `includes/classes/handlers/` (error log, core/theme/plugin versions, users).
+
+## Releases
+
+Tag and publish via GitHub releases; client sites should update from the releases page rather than cloning this repository directly.
