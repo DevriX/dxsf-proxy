@@ -2,6 +2,8 @@
 
 WordPress plugin that exposes REST API endpoints so the [DX Stability Framework](https://github.com/DevriX/dx-stability-framework) can read site-internal data without SSH access to the server.
 
+**Full guide (integration, uptime, company-wide):** [Stability Reporting on DevriX Verse](https://devrixverse.com/knowledgebase/stability-reporting-how-to-have-your-site-monitored-by-the-framework/) → links to the shared Google Doc.
+
 ## Related repositories
 
 | Repository | Role |
