@@ -25,7 +25,7 @@ class CLI {
 	 * ## OPTIONS
 	 *
 	 * --core-url=<url>
-	 * : Core URL, e.g. https://sf.devrix.com.
+	 * : Core URL, from the dashboard.
 	 *
 	 * --site-id=<id>
 	 * : Site id from the dashboard.
@@ -35,7 +35,7 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp dxsf connect --core-url=https://sf.devrix.com --site-id=01JD...
+	 *     wp dxsf connect --core-url=<core url> --site-id=<site id>
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Named arguments.
