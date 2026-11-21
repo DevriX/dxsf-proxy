@@ -25,3 +25,24 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+$dxsf_options = array(
+	'dxsf_core_url',
+	'dxsf_site_id',
+	'dxsf_site_key',
+	'dxsf_site_status',
+	'dxsf_min_version',
+	'dxsf_latest_version',
+	'dxsf_last_push',
+	'dxsf_error_log_file',
+	'dxsf_date_format',
+	'dxsf_remote_address',
+	'dxsf_email_extensions',
+);
+
+foreach ( $dxsf_options as $dxsf_option ) {
+	delete_option( $dxsf_option );
+}
+
+wp_clear_scheduled_hook( 'dxsf_proxy_push' );
+delete_transient( 'dxsf_proxy_update' );

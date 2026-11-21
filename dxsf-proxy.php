@@ -15,12 +15,15 @@
  * Plugin Name:       DXSF Proxy
  * Plugin URI:        https://devrix.com
  * Description:       Stability Framework Proxy Plugin
- * Version:           2.4.2
+ * Version:           3.0.0
+ * Requires at least: 6.0
+ * Requires PHP:      7.4
+ * Tested up to:      7.1
  * Author:            DevriX
  * Author URI:        https://devrix.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       plugin-name
+ * Text Domain:       dxsf-proxy
  * Domain Path:       /languages
  */
 
@@ -34,7 +37,7 @@ if ( ! defined( 'WPINC' ) ) {
  * For the versioning of the plugin is used SemVer - https://semver.org
  * Rename this for every new plugin and update it as you release new versions.
  */
-define( 'DXSF_PROXY_VERSION', '2.4.2' );
+define( 'DXSF_PROXY_VERSION', '3.0.0' );
 
 if ( ! defined( 'DXSF_PROXY_DIR' ) ) {
 	define( 'DXSF_PROXY_DIR', plugin_dir_path( __FILE__ ) );
@@ -42,10 +45,6 @@ if ( ! defined( 'DXSF_PROXY_DIR' ) ) {
 
 if ( ! defined( 'DXSF_PROXY_URL' ) ) {
 	define( 'DXSF_PROXY_URL', plugin_dir_url( __FILE__ ) );
-}
-
-if ( ! defined( 'DXSF_DEBUG' ) ) {
-	define( 'DXSF_DEBUG', false );
 }
 
 /**

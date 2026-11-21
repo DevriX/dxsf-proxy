@@ -27,6 +27,6 @@ class Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-		// Some code.
+		wp_clear_scheduled_hook( 'dxsf_proxy_push' );
 	}
 }

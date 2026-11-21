@@ -15,7 +15,7 @@ class Update {
 		$this->package_name  = 'dxsf-wordpress-proxy.zip';
 		$this->version       = DXSF_PROXY_VERSION;
 		$this->cache_key     = 'dxsf_proxy_update';
-		$this->cache_allowed = false;
+		$this->cache_allowed = true;
 	}
 
 	public function get_remote_version() {
@@ -52,7 +52,7 @@ class Update {
 
 			$remote_version = $matches[1];
 
-			set_transient( $this->cache_key, $remote_version, DAY_IN_SECONDS );
+			set_transient( $this->cache_key, $remote_version, 6 * HOUR_IN_SECONDS );
 
 		}
 

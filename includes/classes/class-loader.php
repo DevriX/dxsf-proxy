@@ -48,7 +48,6 @@ class Loader {
 
 		$this->actions = array();
 		$this->filters = array();
-
 	}
 
 	/**
@@ -103,7 +102,6 @@ class Loader {
 		);
 
 		return $hooks;
-
 	}
 
 	/**

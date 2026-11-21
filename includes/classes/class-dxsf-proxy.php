@@ -58,7 +58,6 @@ class Dxsf_Proxy {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -81,7 +80,7 @@ class Dxsf_Proxy {
 
 		if ( function_exists( 'spl_autoload_register' ) ) {
 			spl_autoload_register(
-				function( $class ) {
+				function ( $class ) {
 					$class      = str_replace( '_', '-', strtolower( $class ) );
 					$path_array = explode( '\\', $class );
 
@@ -101,7 +100,6 @@ class Dxsf_Proxy {
 			// Run the loader.
 			$this->loader = new Loader();
 		}
-
 	}
 
 	/**
@@ -117,8 +115,7 @@ class Dxsf_Proxy {
 
 		$plugin_i18n = new i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+		$this->loader->add_action( 'init', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
 	/**
@@ -134,7 +131,9 @@ class Dxsf_Proxy {
 
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_dxsf_menu_page' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_dxsf_settings' );
-
+		$this->loader->add_action( 'admin_post_dxsf_save_connection', $plugin_admin, 'save_connection' );
+		$this->loader->add_action( 'admin_post_dxsf_push_now', $plugin_admin, 'push_now' );
+		$this->loader->add_action( 'admin_notices', $plugin_admin, 'admin_notices' );
 
 		$updater = new Updater\Update();
 
@@ -158,6 +157,13 @@ class Dxsf_Proxy {
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_rest_api_endpoints' );
 		$this->loader->add_action( 'rest_pre_echo_response', $plugin_public, 'hide_rest_api_endpoint' );
 
+		// The push. Scheduled on init too, because sites updated from 2.x never run the activation hook.
+		add_action( Client::HOOK, array( Client::class, 'scheduled_push' ) );
+		add_action( 'init', array( Client::class, 'schedule' ) );
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'dxsf', CLI::class );
+		}
 	}
 
 	/**

@@ -31,8 +31,7 @@ class I18n {
 		load_plugin_textdomain(
 			'dxsf-proxy',
 			false,
-			DXSF_PROXY_DIR . '/languages/'
+			dirname( plugin_basename( DXSF_PROXY_DIR . 'dxsf-proxy.php' ) ) . '/languages/'
 		);
-
 	}
 }

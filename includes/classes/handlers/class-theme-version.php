@@ -1,18 +1,34 @@
 <?php
+/**
+ * Theme version endpoint: the active theme and its parent.
+ *
+ * @since 1.0.0
+ * @package Dxsf_Proxy
+ */
+
 namespace Dxsf_proxy\Handlers;
 
 use WP_REST_Request;
 use WP_REST_Response;
 
-class theme_version implements HandlerInterface {
+/**
+ * Theme version handler.
+ */
+class Theme_Version implements HandlerInterface {
 
-	public function handle( WP_REST_Request $request ) : WP_REST_Response {
+	/**
+	 * Return the active theme and parent.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response
+	 */
+	public function handle( WP_REST_Request $request ): WP_REST_Response {
 
 		$parent = get_template();
-		$child = get_stylesheet();
+		$child  = get_stylesheet();
 
 		$parent_theme = wp_get_theme( $parent );
-		$child_theme = wp_get_theme( $child );
+		$child_theme  = wp_get_theme( $child );
 
 		$response = array(
 			'parent_theme'   => $parent_theme->get( 'Name' ),
@@ -25,5 +41,4 @@ class theme_version implements HandlerInterface {
 
 		return new WP_REST_Response( $response, 200 );
 	}
-	
 }

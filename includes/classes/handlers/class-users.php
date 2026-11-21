@@ -1,69 +1,83 @@
 <?php
+/**
+ * Users endpoint: the accounts whose email matches the configured domains.
+ *
+ * @since 1.0.0
+ * @package Dxsf_Proxy
+ */
+
 namespace Dxsf_proxy\Handlers;
 
 use WP_REST_Request;
 use WP_REST_Response;
 
-class users implements HandlerInterface {
+/**
+ * Users handler.
+ */
+class Users implements HandlerInterface {
 
+	/**
+	 * Return the matching users.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response
+	 */
 	public function handle( WP_REST_Request $request ): WP_REST_Response {
-
 		$email_extensions = get_option( 'dxsf_email_extensions' );
 
 		if ( empty( $email_extensions ) ) {
 			return new WP_REST_Response( 'Email Extensions not set', 404 );
 		}
 
+		return new WP_REST_Response( self::find( $email_extensions ), 200 );
+	}
+
+	/**
+	 * Users whose email ends with one of the given domains.
+	 *
+	 * @param string $email_extensions Comma separated domains, e.g. "devrix.com,abv.bg".
+	 * @return array
+	 */
+	public static function find( $email_extensions ) {
 		global $wpdb;
 
-		$email_extensions = explode( ',', $email_extensions );
+		$likes = array();
 
-		foreach ( $email_extensions as $index => $extension ) {
+		foreach ( explode( ',', (string) $email_extensions ) as $extension ) {
 			$extension = trim( $extension );
 
-			if ( empty( $extension ) ) {
-				unset( $email_extensions[ $index ] );
-			} else {
-				$email_extensions[ $index ] = "user_email LIKE '%@" . $wpdb->esc_like( $extension ) . "'";
+			if ( '' !== $extension ) {
+				$likes[] = '%@' . $wpdb->esc_like( $extension );
 			}
 		}
 
-		$where = 'WHERE (' . implode( ' OR ', $email_extensions ) . ')';
+		if ( empty( $likes ) ) {
+			return array();
+		}
 
-		$users = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID, display_name, user_email FROM $wpdb->users $where"
-			)
-		);
+		$where = implode( ' OR ', array_fill( 0, count( $likes ), 'user_email LIKE %s' ) );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $where holds the placeholders; one read per push.
+		$users = $wpdb->get_results( $wpdb->prepare( "SELECT ID, display_name, user_email FROM {$wpdb->users} WHERE {$where}", $likes ) );
 
 		$is_multisite = is_multisite();
-
-		$response = array();
+		$response     = array();
 
 		foreach ( $users as $user ) {
-
 			$user_info = array(
-				'id'    => $user->ID,
+				'id'    => (int) $user->ID,
 				'name'  => $user->display_name,
 				'email' => $user->user_email,
 				'sites' => '',
 			);
 
 			if ( $is_multisite ) {
-				$user_blogs = get_blogs_of_user( $user->ID );
-
-				$user_info['sites'] = array();
-
-				foreach ( $user_blogs as $user_blog ) {
-					$user_info['sites'][] = $user_blog->userblog_id;
-				}
-
-				$user_info['sites'] = implode( ',', $user_info['sites'] );
+				$user_info['sites'] = implode( ',', wp_list_pluck( get_blogs_of_user( $user->ID ), 'userblog_id' ) );
 			}
 
 			$response[] = $user_info;
 		}
 
-		return new WP_REST_Response( $response, 200 );
+		return $response;
 	}
 }

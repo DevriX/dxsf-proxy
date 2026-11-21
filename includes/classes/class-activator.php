@@ -27,6 +27,6 @@ class Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-		// Some code.
+		// The push is scheduled on init once the site is connected, see Client::schedule().
 	}
 }
