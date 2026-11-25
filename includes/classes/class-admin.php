@@ -76,6 +76,12 @@ class Admin {
 	 * Register the monitoring settings saved through options.php.
 	 */
 	public function register_dxsf_settings() {
+		// Unregistered for everyone else, so options.php refuses the group: a site admin without a
+		// devrix.com address can neither see nor post these settings.
+		if ( ! self::is_devrix_admin() ) {
+			return;
+		}
+
 		add_settings_section( 'dxsf-settings-section', __( 'Monitoring', 'dxsf-proxy' ), '__return_false', 'dxsf-settings-section' );
 
 		register_setting( 'dxsf-settings-group', 'dxsf_error_log_file', array( 'sanitize_callback' => 'sanitize_text_field' ) );

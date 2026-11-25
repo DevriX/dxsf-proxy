@@ -35,6 +35,13 @@ Release: publish the GitHub release with the asset `dxsf-wordpress-proxy.zip` in
 
 ## Changelog
 
+### 3.0.1
+
+- The release zip holds a `dxsf-wordpress-proxy` folder, the name 2.x installs have, so the update replaces the plugin in place
+- Updates keep the folder the plugin is installed in
+- The error log setting refuses stream wrappers and PHP or config files
+- The monitoring settings are registered only for DevriX administrators
+
 ### 3.0.0
 
 - Connection to Stability Framework v2, with signed requests in both directions

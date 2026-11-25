@@ -64,8 +64,8 @@ class Error_Log implements HandlerInterface {
 	 * @return bool
 	 */
 	public static function exists( $error_path ) {
-		if ( file_exists( $error_path ) ) {
-			return is_readable( $error_path );
+		if ( false !== self::local_log_path( $error_path ) ) {
+			return true;
 		}
 
 		if ( ! wp_http_validate_url( $error_path ) ) {
@@ -75,6 +75,36 @@ class Error_Log implements HandlerInterface {
 		$response = wp_safe_remote_head( $error_path, array( 'timeout' => 10 ) );
 
 		return ! is_wp_error( $response ) && 200 === (int) wp_remote_retrieve_response_code( $response );
+	}
+
+	/**
+	 * The resolved path of a readable local log, or false.
+	 *
+	 * Stream wrappers (phar://, file://, php://) are refused before any file function sees them,
+	 * and so are PHP, config and dump files, so the setting cannot turn the log route into a reader
+	 * for wp-config.php or a phar. Plain names such as error_log or debug.log keep working.
+	 *
+	 * @param string $path The saved setting.
+	 * @return string|false
+	 */
+	public static function local_log_path( $path ) {
+		$path = (string) $path;
+
+		if ( '' === $path || false !== strpos( $path, '://' ) || 0 === stripos( $path, 'phar:' ) ) {
+			return false;
+		}
+
+		$real = realpath( $path );
+
+		if ( false === $real || ! is_file( $real ) || ! is_readable( $real ) ) {
+			return false;
+		}
+
+		if ( preg_match( '/\.(php\d?|phtml|phar|inc|ini|env|sql|json|yml|yaml|key|pem)$/i', $real ) || '.env' === basename( $real ) ) {
+			return false;
+		}
+
+		return $real;
 	}
 
 	/**
@@ -91,9 +121,13 @@ class Error_Log implements HandlerInterface {
 	 * @return string
 	 */
 	public static function fetch_error_log_data( $file, $date ) {
-		if ( file_exists( $file ) ) {
+		$local = self::local_log_path( $file );
+
+		if ( false !== $local ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- streamed, logs can be large.
-			$handle = fopen( $file, 'r' );
+			$handle = fopen( $local, 'r' );
+		} elseif ( ! wp_http_validate_url( $file ) ) {
+			return '';
 		} else {
 			// URLs go through the WordPress HTTP API, which refuses internal addresses and other stream wrappers.
 			$response = wp_safe_remote_get(
