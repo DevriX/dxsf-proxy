@@ -125,7 +125,8 @@ class Admin {
 
 		Client::schedule();
 
-		wp_safe_redirect( add_query_arg( 'dxsf-saved', '1', menu_page_url( self::PAGE, false ) ) );
+		// admin-post.php does not build the menu, so menu_page_url() is empty here.
+		wp_safe_redirect( add_query_arg( 'dxsf-saved', '1', admin_url( 'admin.php?page=' . self::PAGE ) ) );
 		exit;
 	}
 
@@ -141,7 +142,7 @@ class Admin {
 
 		Client::push( 'manual' );
 
-		wp_safe_redirect( menu_page_url( self::PAGE, false ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE ) );
 		exit;
 	}
 

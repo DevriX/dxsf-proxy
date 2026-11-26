@@ -41,6 +41,7 @@ Release: publish the GitHub release with the asset `dxsf-wordpress-proxy.zip` in
 - Updates keep the folder the plugin is installed in
 - The error log setting refuses stream wrappers and PHP or config files
 - The monitoring settings are registered only for DevriX administrators
+- Saving the connection and Send inventory now return to the settings page instead of a blank page
 
 ### 3.0.0
 
